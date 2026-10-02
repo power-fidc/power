@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>বেসিক ইলেকট্রিক্যাল - by Sanjoy Paul</title>
+<style>
+:root{
+  --bg:#F3F0E8; --paper:#FFFFFF; --line:#D9D2C2; --line2:#C7BEA6;
+  --text:#26241E; --dim:#786F5C; --navy:#1E3350; --copper:#B5651D; --teal:#0E6E5C; --danger:#B03A2E;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;min-height:100%;background:
+   repeating-linear-gradient(0deg, rgba(30,51,80,0.05) 0px, rgba(30,51,80,0.05) 1px, transparent 1px, transparent 26px),
+   repeating-linear-gradient(90deg, rgba(30,51,80,0.05) 0px, rgba(30,51,80,0.05) 1px, transparent 1px, transparent 26px),
+   var(--bg);
+   color:var(--text);font-family:'Segoe UI',Roboto,-apple-system,sans-serif;}
+.wrap{max-width:660px;margin:0 auto;padding:18px 14px 44px;}
+header{background:var(--navy);color:#F3F0E8;padding:14px 16px;border-radius:6px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 0 var(--copper);}
+header h1{font-size:1.08rem;margin:0;letter-spacing:.3px;font-weight:700;}
+header span{font-family:'Courier New',monospace;font-size:.72rem;opacity:.8;}
+.credit{font-size:.75rem;color:var(--copper);margin:8px 2px 16px;text-align:right;font-weight:700;}
+.tabs{display:flex;gap:7px;overflow-x:auto;padding:2px 2px 10px;margin-bottom:14px;-webkit-overflow-scrolling:touch;}
+.tab{flex:0 0 auto;padding:9px 13px;border-radius:20px;background:var(--paper);border:1.5px solid var(--line2);color:var(--dim);font-size:.8rem;cursor:pointer;white-space:nowrap;font-weight:600;}
+.tab.active{background:var(--copper);color:#fff;border-color:var(--copper);}
+.card{background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--navy);border-radius:6px;padding:18px 16px;display:none;box-shadow:0 2px 6px rgba(30,40,60,0.06);overflow:visible;}
+.card.active{display:block;}
+.card h2{font-size:1rem;margin:0 0 4px;color:var(--navy);font-weight:700;}
+.card p.desc{font-size:.82rem;color:var(--dim);margin:0 0 16px;line-height:1.5;}
+.field{margin-bottom:16px;overflow:visible;}
+label{display:block;font-size:.82rem;color:var(--text);margin-bottom:5px;font-weight:700;}
+.hint{font-size:.74rem;color:var(--dim);margin-top:5px;line-height:1.55;}
+input,select{width:100%;padding:10px 11px;background:#FCFBF8;border:1.5px solid var(--line2);border-radius:5px;color:var(--text);font-size:.92rem;font-family:'Courier New',monospace;min-height:42px;}
+input:focus,select:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,110,92,0.12);}
+select{font-family:'Segoe UI',Roboto,sans-serif;}
+.row{display:flex;gap:10px;}
+.row>.field{flex:1;min-width:0;}
+@media (max-width:420px){ .row{flex-direction:column;gap:0;} }
+button.calc{width:100%;padding:12px;margin-top:4px;background:var(--teal);border:none;border-radius:5px;color:#fff;font-weight:700;font-size:.9rem;cursor:pointer;letter-spacing:.3px;}
+button.calc:active{opacity:.85;}
+.readout{margin-top:16px;padding:15px;background:#F7F4EC;border:1px solid var(--line);border-left:4px solid var(--copper);border-radius:5px;display:none;overflow:visible;}
+.readout.show{display:block;}
+.readout .val{font-family:'Courier New',monospace;font-size:1.7rem;color:var(--copper);font-weight:700;}
+.readout .val2{font-family:'Courier New',monospace;font-size:1.3rem;color:var(--teal);font-weight:700;}
+.readout .unit{font-size:.85rem;color:var(--dim);margin-left:4px;}
+.readout .formula{font-size:.74rem;color:var(--dim);margin-top:9px;font-family:'Courier New',monospace;line-height:1.65;white-space:pre-wrap;}
+.readout .note{font-size:.76rem;color:var(--danger);margin-top:9px;line-height:1.55;}
+.readout .sub{font-size:.79rem;color:var(--text);margin-top:8px;line-height:1.55;}
+header span{text-align:right;line-height:1.4;}
+header span b{display:block;font-size:1rem;opacity:1;}
+.row.keep{flex-direction:row;gap:10px;}
+.sidetitle{font-size:.86rem;font-weight:700;color:var(--navy);margin:2px 0 6px;padding:4px 8px;background:#EAE6DA;border-radius:4px;display:inline-block;}
+.line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);}
+.line .lbl{font-size:.8rem;color:var(--dim);}
+.line .val2{font-family:'Courier New',monospace;font-size:1.2rem;color:var(--teal);font-weight:700;text-align:right;}
+.iconbox{display:flex;align-items:center;gap:10px;margin:2px 0 14px;padding:8px 10px;background:#EFECE2;border-radius:6px;border:1px dashed var(--line2);}
+.iconbox svg{flex:0 0 auto;}
+.iconbox span{font-size:.78rem;color:var(--navy);font-weight:700;}
+.breakericon{display:inline-flex;align-items:center;gap:5px;vertical-align:middle;}
+.divider{border-top:1px dashed var(--line2);margin:14px 0;}
+.infoblock label{color:var(--teal);}
+.infoblock .sub{color:var(--text);font-size:.79rem;line-height:1.7;}
+footer{text-align:center;font-size:.74rem;color:var(--dim);margin-top:22px;line-height:1.7;}
+footer .cr{color:var(--copper);font-weight:700;}
+.toggle{display:flex;border:1.5px solid var(--line2);border-radius:5px;overflow:hidden;margin-bottom:14px;}
+.toggle div{flex:1;text-align:center;padding:9px 6px;font-size:.82rem;font-weight:700;color:var(--dim);cursor:pointer;background:#FCFBF8;}
+.toggle div.active{background:var(--navy);color:#fff;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>⚡ বেসিক ইলেকট্রিক্যাল</h1>
+    <span id="clock">--:--</span>
+  </header>
+  <div class="credit">Credit by Sanjoy Paul</div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="kva">kVA</div>
+    <div class="tab" data-tab="kw">kW</div>
+    <div class="tab" data-tab="pf">PF কারেকশন</div>
+    <div class="tab" data-tab="vd">ভোল্টেজ ড্রপ</div>
+    <div class="tab" data-tab="pue">PUE</div>
+    <div class="tab" data-tab="battery">ব্যাটারি ব্যাকআপ</div>
+    <div class="tab" data-tab="ne">N-E ভোল্টেজ</div>
+    <div class="tab" data-tab="cable">কেবল ও ব্রেকার</div>
+    <div class="tab" data-tab="motorcap">মোটর ক্যাপাসিটর</div>
+    <div class="tab" data-tab="dg">DG ফুয়েল</div>
+  </div>
+
+  <!-- kVA SHEET -->
+  <div class="card active" id="kva">
+    <h2>kVA</h2>
+    <p class="desc">ট্রান্সফরমার, জেনারেটর বা ইউপিএস — kVA থেকে ফুল লোড কারেন্ট (FLC), ব্রেকার ও কেবল সাইজ। ট্রান্সফরমারে HT ও LT দুই পাশেরই হিসাব পাবেন।</p>
+    <div class="field">
+      <label>কোনটার জন্য হিসাব করবেন</label>
+      <select id="kva-equip">
+        <option value="transformer">ট্রান্সফরমার</option>
+        <option value="generator">জেনারেটর</option>
+        <option value="ups">ইউপিএস (UPS)</option>
+      </select>
+    </div>
+    <div class="iconbox" id="kva-icon"></div>
+    <div class="field">
+      <label>ফেজ</label>
+      <select id="kva-phase">
+        <option value="3">থ্রি ফেজ</option>
+        <option value="1">সিঙ্গেল ফেজ</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>রেটেড kVA</label>
+      <input autocomplete="off" type="number" id="kva-rating" placeholder="সংখ্যা লিখুন">
+      <div class="hint">উদাহরণ: 1000 kVA ট্রান্সফরমার হলে এখানে 1000 লিখবেন।</div>
+    </div>
+    <div id="kva-tr-fields">
+      <div class="row">
+        <div class="field">
+          <label>HT ভোল্টেজ (kV)</label>
+          <input autocomplete="off" type="number" id="kva-ht" placeholder="সংখ্যা লিখুন" value="11" step="0.1">
+          <div class="hint">উদাহরণ: HT সাইড 11 kV হলে 11 লিখবেন (33 kV হলে 33)। এখানে kV তে লিখতে হবে।</div>
+        </div>
+        <div class="field">
+          <label>LT ভোল্টেজ (V)</label>
+          <input autocomplete="off" type="number" id="kva-lt" placeholder="সংখ্যা লিখুন" value="415">
+          <div class="hint">উদাহরণ: LT সাইড 415V হলে 415 লিখবেন। এখানে V (ভোল্ট) তে লিখতে হবে।</div>
+        </div>
+      </div>
+    </div>
+    <div class="field" id="kva-single-field" style="display:none;">
+      <label>ভোল্টেজ (V, লাইন-টু-লাইন)</label>
+      <input autocomplete="off" type="number" id="kva-voltage" placeholder="সংখ্যা লিখুন" value="415">
+      <div class="hint">উদাহরণ: 415V হলে 415 লিখবেন। সিঙ্গেল ফেজ হলে 230V।</div>
+    </div>
+    <button class="calc" onclick="calcKVA()">হিসাব করুন</button>
+    <div class="readout" id="kva-out"></div>
+  </div>
+
+  <!-- kW SHEET -->
+  <div class="card" id="kw">
+    <h2>kW</h2>
+    <p class="desc">মোটর, জেনারেটর, ইউপিএস বা ট্রান্সফরমার — kW থেকে ফুল লোড কারেন্ট (FLC), ব্রেকার ও কেবল সাইজ।</p>
+    <div class="field">
+      <label>কোনটার জন্য হিসাব করবেন</label>
+      <select id="kw-equip">
+        <option value="motor">মোটর</option>
+        <option value="generator">জেনারেটর</option>
+        <option value="ups">ইউপিএস (UPS)</option>
+        <option value="transformer">ট্রান্সফরমার</option>
+      </select>
+    </div>
+    <div class="iconbox" id="kw-icon"></div>
+    <div class="field">
+      <label>ফেজ</label>
+      <select id="kw-phase">
+        <option value="3">থ্রি ফেজ</option>
+        <option value="1">সিঙ্গেল ফেজ</option>
+      </select>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>রেটেড kW</label>
+        <input autocomplete="off" type="number" id="kw-rating" placeholder="সংখ্যা লিখুন">
+        <div class="hint">উদাহরণ: 37 kW মোটর হলে 37 লিখবেন।</div>
+      </div>
+      <div class="field">
+        <label>ভোল্টেজ (V, লাইন-টু-লাইন)</label>
+        <input autocomplete="off" type="number" id="kw-voltage" placeholder="সংখ্যা লিখুন" value="415">
+        <div class="hint">উদাহরণ: 415V হলে 415 লিখবেন।</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Power Factor</label>
+        <input autocomplete="off" type="number" id="kw-pf" placeholder="সংখ্যা লিখুন" step="0.01" value="0.8">
+        <div class="hint">উদাহরণ: নেমপ্লেটে PF 0.85 লেখা থাকলে 0.85 লিখবেন। না জানলে 0.8 রাখুন।</div>
+      </div>
+      <div class="field" id="kw-eff-field">
+        <label>Efficiency (%) — শুধু মোটরের জন্য</label>
+        <input autocomplete="off" type="number" id="kw-eff" placeholder="সংখ্যা লিখুন" value="92">
+        <div class="hint">উদাহরণ: নেমপ্লেটে efficiency 92% হলে 92 লিখবেন।</div>
+      </div>
+    </div>
+    <button class="calc" onclick="calcKW()">হিসাব করুন</button>
+    <div class="readout" id="kw-out"></div>
+  </div>
+
+  <!-- PF Correction -->
+  <div class="card" id="pf">
+    <h2>পাওয়ার ফ্যাক্টর কারেকশন</h2>
+    <p class="desc">PF টার্গেট পর্যন্ত তুলতে কত kVAR ক্যাপাসিটর ব্যাংক লাগবে তার হিসাব।</p>
+    <div class="row">
+      <div class="field">
+        <label>লোড (kW)</label>
+        <input autocomplete="off" type="number" id="pf-kw" placeholder="সংখ্যা লিখুন">
+        <div class="hint">উদাহরণ: মোট লোড 400 kW হলে 400 লিখবেন।</div>
+      </div>
+      <div class="field">
+        <label>বর্তমান PF</label>
+        <input autocomplete="off" type="number" id="pf-existing" placeholder="সংখ্যা লিখুন" step="0.01">
+        <div class="hint">উদাহরণ: মিটারে বর্তমান PF 0.75 দেখাচ্ছে হলে 0.75 লিখবেন।</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>টার্গেট PF</label>
+      <input autocomplete="off" type="number" id="pf-target" placeholder="সংখ্যা লিখুন" step="0.01" value="0.95">
+      <div class="hint">উদাহরণ: PF 0.95 এ তুলতে চাইলে 0.95 লিখবেন।</div>
+    </div>
+    <button class="calc" onclick="calcPF()">হিসাব করুন</button>
+    <div class="readout" id="pf-out"></div>
+  </div>
+
+  <!-- Voltage drop -->
+  <div class="card" id="vd">
+    <h2>ভোল্টেজ ড্রপ চেক</h2>
+    <p class="desc">কপার কেবলের একটি রানে আনুমানিক % ভোল্টেজ ড্রপ বের করুন।</p>
+    <div class="row">
+      <div class="field">
+        <label>সিস্টেম</label>
+        <select id="vd-phase"><option value="3">থ্রি ফেজ</option><option value="1">সিঙ্গেল ফেজ</option></select>
+      </div>
+      <div class="field">
+        <label>ভোল্টেজ (V)</label>
+        <input autocomplete="off" type="number" id="vd-voltage" placeholder="সংখ্যা লিখুন">
+        <div class="hint">উদাহরণ: 415V সিস্টেম হলে 415 লিখবেন।</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>কারেন্ট (A)</label>
+        <input autocomplete="off" type="number" id="vd-current" placeholder="সংখ্যা লিখুন">
+        <div class="hint">উদাহরণ: লোড কারেন্ট 150A হলে 150 লিখবেন।</div>
+      </div>
+      <div class="field">
+        <label>দৈর্ঘ্য, ওয়ান-ওয়ে (মিটার)</label>
+        <input autocomplete="off" type="number" id="vd-length" placeholder="সংখ্যা লিখুন">
+        <div class="hint">উদাহরণ: দূরত্ব 80 মিটার হলে 80 লিখবেন।</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>কেবল সাইজ (mm² Cu)</label>
+        <input autocomplete="off" type="number" id="vd-size" placeholder="সংখ্যা লিখুন">
+        <div class="hint">উদাহরণ: 70 mm² কেবল হলে 70 লিখবেন।</div>
+      </div>
+      <div class="field">
+        <label>লোড PF</label>
+        <input autocomplete="off" type="number" id="vd-pf" placeholder="সংখ্যা লিখুন" step="0.01" value="0.9">
+        <div class="hint">উদাহরণ: PF 0.9 হলে 0.9 লিখবেন।</div>
+      </div>
+    </div>
+    <button class="calc" onclick="calcVD()">হিসাব করুন</button>
+    <div class="readout" id="vd-out"></div>
+  </div>
+
+  <!-- PUE -->
+  <div class="card" id="pue">
+    <h2>PUE ক্যালকুলেটর</h2>
+    <p class="desc">ডাটা সেন্টারের Power Usage Effectiveness = মোট ফ্যাসিলিটি পাওয়ার / আইটি লোড পাওয়ার।</p>
+    <div class="row">
+      <div class="field">
+        <label>মোট ফ্যাসিলিটি পাওয়ার (kW)</label>
+        <input autocomplete="off" type="number" id="pue-total" placeholder="সংখ্যা লিখুন">
+        <div class="hint">উদাহরণ: মেইন মিটারে মোট লোড 180 kW হলে 180 লিখবেন (IT + কুলিং + লাইটিং সব মিলিয়ে)।</div>
+      </div>
+      <div class="field">
+        <label>শুধু IT লোড পাওয়ার (kW)</label>
+        <input autocomplete="off" type="number" id="pue-it" placeholder="সংখ্যা লিখুন">
+        <div class="hint">উদাহরণ: শুধু সার্ভার লোড 120 kW হলে 120 লিখবেন।</div>
+      </div>
+    </div>
+    <button class="calc" onclick="calcPUE()">হিসাব করুন</button>
+    <div class="readout" id="pue-out"></div>
+  </div>
+
+  <!-- Battery -->
+  <div class="card" id="battery">
+    <h2>UPS ব্যাটারি ব্যাকআপ টাইম</h2>
+    <p class="desc">ব্যাটারি ব্যাংকের Ah ও লোড থেকে আনুমানিক ব্যাকআপ সময়।</p>
+    <div class="row">
+      <div class="field">
+        <label>ব্যাটারি ব্যাংক ভোল্টেজ (V)</label>
+        <input autocomplete="off" type="number" id="bat-v" placeholder="সংখ্যা লিখুন">
+        <div class="hint">উদাহরণ: 240V ব্যাংক হলে 240 লিখবেন।</div>
+      </div>
+      <div class="field">
+        <label>ক্যাপাসিটি (Ah)</label>
+        <input autocomplete="off" type="number" id="bat-ah" placeholder="সংখ্যা লিখুন">
+        <div class="hint">উদাহরণ: ব্যাটারিতে 100Ah লেখা থাকলে 100 লিখবেন।</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>লোড (kW)</label>
+        <input autocomplete="off" type="number" id="bat-load" placeholder="সংখ্যা লিখুন">
+        <div class="hint">উদাহরণ: লোড 10 kW হলে 10 লিখবেন।</div>
+      </div>
+      <div class="field">
+        <label>UPS/ইনভার্টার Efficiency (%)</label>
+        <input autocomplete="off" type="number" id="bat-eff" placeholder="সংখ্যা লিখুন" value="90">
+        <div class="hint">উদাহরণ: সাধারণত 90% ধরা হয়।</div>
+      </div>
+    </div>
+    <button class="calc" onclick="calcBattery()">হিসাব করুন</button>
+    <div class="readout" id="bat-out"></div>
+  </div>
+
+  <!-- N-E Voltage -->
+  <div class="card" id="ne">
+    <h2>নিউট্রাল-আর্থ ভোল্টেজ বেড়ে গেলে</h2>
+    <p class="desc">স্বাভাবিক N-E ভোল্টেজ সাধারণত 1-2V এর নিচে থাকে। এর বেশি পেলে নিচের ধাপগুলো অনুসরণ করুন।</p>
+
+    <div class="field infoblock">
+      <label>সম্ভাব্য কারণ</label>
+      <div class="sub">
+      ১. প্যানেল, বাসবার বা জয়েন্টে নিউট্রাল/আর্থ কানেকশন ঢিলা বা মরিচা পড়া<br>
+      ২. আর্থ পিটের রেজিস্ট্যান্স বেশি (মাটি শুকনো, আর্থ ইলেকট্রোড নষ্ট, স্ট্রিপ মরিচা পড়া)<br>
+      ৩. নিউট্রালে ওভারলোড — তিন ফেজে লোড আনব্যালেন্স থাকলে নিউট্রালে বেশি কারেন্ট যায়<br>
+      ৪. নিউট্রাল ও আর্থ ভুল জায়গায় বন্ডিং করা<br>
+      ৫. হারমোনিক কারেন্ট (UPS, VFD বা নন-লিনিয়ার লোড থেকে), বিশেষ করে 3rd হারমোনিক<br>
+      ৬. নিউট্রাল কেবল লম্বা ও সাইজে ছোট হলে ভোল্টেজ ড্রপ N-E ভোল্টেজ হিসেবে দেখা যায়<br>
+      ৭. কোনো ইকুইপমেন্টে ফল্ট থাকলে আর্থ/নিউট্রাল পাথে কারেন্ট লিক করতে পারে
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="field infoblock">
+      <label>চেক ও মাপজোখ</label>
+      <div class="sub">
+      • প্রথমে মেইন প্যানেলে N-E ভোল্টেজ মাপুন, তারপর নিচের দিকে — কোথায় বেড়ে যাচ্ছে খুঁজে বের করুন<br>
+      • আর্থ টেস্টার দিয়ে আর্থ পিট রেজিস্ট্যান্স মাপুন (সাধারণত স্ট্যান্ডার্ড অনুযায়ী 1-5Ω)<br>
+      • ক্ল্যাম্প মিটার দিয়ে নিউট্রাল কারেন্ট চেক করুন (লোড ব্যালেন্স থাকলে প্রায় শূন্য থাকার কথা)<br>
+      • R, Y, B তিন ফেজের কারেন্ট ব্যালেন্স চেক করুন<br>
+      • নিউট্রাল-আর্থ বন্ডিং শুধু মেইন ইনকামারে একবারই আছে কিনা নিশ্চিত করুন
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="field infoblock">
+      <label style="color:var(--danger);">সেফটি সতর্কতা</label>
+      <div class="sub">
+      • N-E ভোল্টেজ বেশি থাকলে খালি হাতে টার্মিনাল স্পর্শ করবেন না — লাইভ হিসেবে ধরুন<br>
+      • মাপার আগে সঠিক PPE ও সঠিক CAT রেটিং এর মিটার ব্যবহার করুন<br>
+      • লোড চালু অবস্থায় "টেস্ট করার জন্য" নিউট্রাল খুলবেন না<br>
+      • ডাটা সেন্টার/আইটি ইকুইপমেন্টে N-E ভোল্টেজ বেশি পেলে সাথে সাথে রিপোর্ট করুন
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="field infoblock">
+      <label style="color:var(--copper);">সমাধান</label>
+      <div class="sub">
+      • সব নিউট্রাল ও আর্থ কানেকশন টাইট ও পরিষ্কার করুন<br>
+      • আর্থ পিট রেজিস্ট্যান্স বেশি হলে ট্রিটমেন্ট করুন বা নতুন ইলেকট্রোড যোগ করুন<br>
+      • তিন ফেজে লোড ব্যালেন্স করুন<br>
+      • মেইন বন্ডিং পয়েন্টের পরে অতিরিক্ত নিউট্রাল-আর্থ বন্ড থাকলে সরান<br>
+      • হারমোনিক সমস্যা হলে নিউট্রাল সাইজ বড় করা বা ফিল্টার লাগানো বিবেচনা করুন<br>
+      • প্রয়োজনে অভিজ্ঞ ইঞ্জিনিয়ারের সাহায্য নিন — এটা সেফটি ইস্যু
+      </div>
+    </div>
+  </div>
+
+  <!-- Cable & Breaker -->
+  <div class="card" id="cable">
+    <h2>কেবল সাইজ ও ব্রেকার সাইজ</h2>
+    <p class="desc">কারেন্ট বা কিলোওয়াট থেকে কেবল সাইজ এবং তার সাথে কত এম্পিয়ারের ব্রেকার লাগবে তা একসাথে বের করুন।</p>
+
+    <div class="toggle" id="cbl-mode-toggle">
+      <div class="active" data-mode="amp">এম্পিয়ার (A) দিয়ে</div>
+      <div data-mode="kw">কিলোওয়াট (kW) দিয়ে</div>
+    </div>
+
+    <div class="field">
+      <label>ফেজ</label>
+      <select id="cbl-phase">
+        <option value="3">থ্রি ফেজ</option>
+        <option value="1">সিঙ্গেল ফেজ</option>
+      </select>
+    </div>
+
+    <div class="field" id="cbl-amp-field">
+      <label>লোড কারেন্ট (A)</label>
+      <input autocomplete="off" type="number" id="cbl-current" placeholder="সংখ্যা লিখুন">
+      <div class="hint">উদাহরণ: 10A লোড হলে 10 লিখবেন। এর জন্য কত kW লোড হচ্ছে তাও নিচে দেখতে চাইলে ভোল্টেজ ও PF দিন (না দিলেও কেবল-ব্রেকার দেখাবে)।</div>
+    </div>
+
+    <div class="field" id="cbl-kw-field" style="display:none;">
+      <label>লোড (kW)</label>
+      <input autocomplete="off" type="number" id="cbl-kw" placeholder="সংখ্যা লিখুন">
+      <div class="hint">উদাহরণ: লোড 50 kW হলে 50 লিখবেন।</div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>ভোল্টেজ (V) <span id="cbl-v-opt" style="font-weight:400;color:var(--dim);">— ঐচ্ছিক</span></label>
+        <input autocomplete="off" type="number" id="cbl-voltage" placeholder="সংখ্যা লিখুন">
+        <div class="hint">উদাহরণ: 415V (থ্রি ফেজ) বা 230V (সিঙ্গেল ফেজ)।</div>
+      </div>
+      <div class="field">
+        <label>Power Factor</label>
+        <input autocomplete="off" type="number" id="cbl-pf" placeholder="সংখ্যা লিখুন" step="0.01" value="0.9">
+        <div class="hint">উদাহরণ: PF 0.9 হলে 0.9 লিখবেন।</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>কন্ডাক্টর</label>
+        <select id="cbl-material"><option value="cu">কপার</option><option value="al">অ্যালুমিনিয়াম</option></select>
+      </div>
+      <div class="field">
+        <label>ডিরেটিং ফ্যাক্টর</label>
+        <input autocomplete="off" type="number" id="cbl-derate" placeholder="সংখ্যা লিখুন" value="1" step="0.05">
+        <div class="hint">ডিরেটিং না থাকলে 1 রাখুন।</div>
+      </div>
+    </div>
+    <button class="calc" onclick="calcCable()">হিসাব করুন</button>
+    <div class="readout" id="cbl-out"></div>
+  </div>
+
+  <!-- Motor Capacitor -->
+  <div class="card" id="motorcap">
+    <h2>মোটর ক্যাপাসিটর সাইজিং</h2>
+    <p class="desc">মোটরের টার্মিনালে সরাসরি কত kVAR ক্যাপাসিটর লাগাতে হবে তার হিসাব।</p>
+    <div class="row">
+      <div class="field">
+        <label>মোটর রেটিং (kW)</label>
+        <input autocomplete="off" type="number" id="mc-kw" placeholder="সংখ্যা লিখুন">
+        <div class="hint">উদাহরণ: মোটর 37 kW হলে 37 লিখবেন।</div>
+      </div>
+      <div class="field">
+        <label>মোটরের চলমান PF</label>
+        <input autocomplete="off" type="number" id="mc-pf1" placeholder="সংখ্যা লিখুন" step="0.01" value="0.8">
+        <div class="hint">না জানলে সাধারণ ইনডাকশন মোটরের জন্য 0.8 ধরা যায়।</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>টার্গেট PF</label>
+      <input autocomplete="off" type="number" id="mc-pf2" placeholder="সংখ্যা লিখুন" step="0.01" value="0.95">
+      <div class="hint">উদাহরণ: 0.95 এ তুলতে চাইলে 0.95 লিখবেন।</div>
+    </div>
+    <button class="calc" onclick="calcMotorCap()">হিসাব করুন</button>
+    <div class="readout" id="mc-out"></div>
+  </div>
+
+  <!-- DG Fuel -->
+  <div class="card" id="dg">
+    <h2>জেনারেটর (DG) ফুয়েল কনজাম্পশন</h2>
+    <p class="desc">রানিং টাইম (ঘণ্টা ও মিনিট) আর খরচ হওয়া ফুয়েল দিয়ে ঘণ্টায় কত লিটার খরচ হয় বের করুন।</p>
+    <div class="row keep">
+      <div class="field">
+        <label>রানিং টাইম — ঘণ্টা</label>
+        <input autocomplete="off" type="number" id="dg-h" placeholder="0" min="0">
+        <div class="hint">উদাহরণ: 1 ঘণ্টা 30 মিনিট চললে এখানে 1 লিখবেন। এক ঘণ্টার কম হলে 0।</div>
+      </div>
+      <div class="field">
+        <label>রানিং টাইম — মিনিট</label>
+        <input autocomplete="off" type="number" id="dg-m" placeholder="0" min="0">
+        <div class="hint">উদাহরণ: উপরের ক্ষেত্রে এখানে 30 লিখবেন। শুধু 45 মিনিট চললে ঘণ্টায় 0, মিনিটে 45।</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>খরচ হওয়া ফুয়েল (লিটার)</label>
+      <input autocomplete="off" type="number" id="dg-fuel" placeholder="সংখ্যা লিখুন" step="0.1">
+      <div class="hint">উদাহরণ: ট্যাংক থেকে 60 লিটার কমেছে হলে 60 লিখবেন।</div>
+    </div>
+    <div class="field">
+      <label>ট্যাংকে এখন কত ফুয়েল আছে - লিটার (না জানলে খালি রাখুন)</label>
+      <input autocomplete="off" type="number" id="dg-tank" placeholder="সংখ্যা লিখুন">
+      <div class="hint">উদাহরণ: 500 লিটার আছে হলে 500 লিখবেন — এই রেটে আর কত সময় চলবে সেটাও বলে দিবে।</div>
+    </div>
+    <button class="calc" onclick="calcDG()">হিসাব করুন</button>
+    <div class="readout" id="dg-out"></div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.card').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.tab).classList.add('active');
+  });
+});
+
+document.querySelectorAll('#cbl-mode-toggle div').forEach(d=>{
+  d.addEventListener('click',()=>{
+    document.querySelectorAll('#cbl-mode-toggle div').forEach(x=>x.classList.remove('active'));
+    d.classList.add('active');
+    const isKw = d.dataset.mode==='kw';
+    document.getElementById('cbl-amp-field').style.display = isKw ? 'none':'block';
+    document.getElementById('cbl-kw-field').style.display = isKw ? 'block':'none';
+    document.getElementById('cbl-v-opt').style.display = isKw ? 'none':'inline';
+  });
+});
+
+function show(id, html){ const el=document.getElementById(id); el.innerHTML=html; el.classList.add('show'); }
+
+function icon(type){
+  const c1='var(--navy)', c2='var(--copper)', c3='var(--teal)';
+  const svgs = {
+    transformer: `<svg width="46" height="46" viewBox="0 0 46 46"><rect x="4" y="10" width="38" height="26" rx="3" fill="none" stroke="${c1}" stroke-width="2"/><circle cx="16" cy="23" r="7" fill="none" stroke="${c2}" stroke-width="2"/><circle cx="30" cy="23" r="7" fill="none" stroke="${c3}" stroke-width="2"/><line x1="16" y1="4" x2="16" y2="10" stroke="${c1}" stroke-width="2"/><line x1="30" y1="4" x2="30" y2="10" stroke="${c1}" stroke-width="2"/><line x1="16" y1="36" x2="16" y2="42" stroke="${c1}" stroke-width="2"/><line x1="30" y1="36" x2="30" y2="42" stroke="${c1}" stroke-width="2"/></svg>`,
+    generator: `<svg width="46" height="46" viewBox="0 0 46 46"><rect x="3" y="14" width="22" height="18" rx="2" fill="none" stroke="${c1}" stroke-width="2"/><circle cx="32" cy="23" r="11" fill="none" stroke="${c2}" stroke-width="2"/><text x="32" y="28" font-size="13" text-anchor="middle" fill="${c2}" font-weight="700">G</text><rect x="7" y="9" width="4" height="5" fill="${c1}"/><rect x="14" y="9" width="4" height="5" fill="${c1}"/></svg>`,
+    ups: `<svg width="46" height="46" viewBox="0 0 46 46"><rect x="8" y="6" width="30" height="34" rx="3" fill="none" stroke="${c1}" stroke-width="2"/><polygon points="25,12 16,25 22,25 19,36 31,21 24,21" fill="${c2}"/><text x="23" y="44" font-size="7" text-anchor="middle" fill="${c3}" font-weight="700">UPS</text></svg>`,
+    motor: `<svg width="46" height="46" viewBox="0 0 46 46"><circle cx="20" cy="23" r="15" fill="none" stroke="${c1}" stroke-width="2"/><text x="20" y="29" font-size="15" text-anchor="middle" fill="${c2}" font-weight="700">M</text><rect x="35" y="19" width="8" height="8" fill="${c1}"/></svg>`,
+    mccb: `<svg width="40" height="40" viewBox="0 0 40 40"><rect x="7" y="4" width="26" height="32" rx="2" fill="none" stroke="${c1}" stroke-width="2"/><rect x="15" y="10" width="10" height="14" rx="1" fill="${c2}"/><line x1="20" y1="24" x2="20" y2="32" stroke="${c1}" stroke-width="2"/></svg>`,
+    mcb: `<svg width="30" height="40" viewBox="0 0 30 40"><rect x="5" y="4" width="20" height="32" rx="2" fill="none" stroke="${c1}" stroke-width="2"/><rect x="11" y="9" width="8" height="12" rx="1" fill="${c3}"/><line x1="15" y1="21" x2="15" y2="30" stroke="${c1}" stroke-width="2"/></svg>`,
+    vcb: `<svg width="46" height="46" viewBox="0 0 46 46"><rect x="6" y="4" width="34" height="34" rx="2" fill="none" stroke="${c1}" stroke-width="2"/><circle cx="23" cy="21" r="9" fill="none" stroke="${c2}" stroke-width="2"/><text x="23" y="25" font-size="9" text-anchor="middle" fill="${c2}" font-weight="700">VCB</text></svg>`
+  };
+  return svgs[type] || '';
+}
+const equipNames = {transformer:'ট্রান্সফরমার',generator:'জেনারেটর',ups:'ইউপিএস (UPS)',motor:'মোটর'};
+function setIcon(boxId, type){
+  document.getElementById(boxId).innerHTML = `${icon(type)}<span>${equipNames[type]}</span>`;
+}
+
+document.getElementById('kva-equip').addEventListener('change', e=>{
+  const tr = e.target.value==='transformer';
+  document.getElementById('kva-tr-fields').style.display = tr ? 'block':'none';
+  document.getElementById('kva-single-field').style.display = tr ? 'none':'block';
+  setIcon('kva-icon', e.target.value);
+});
+setIcon('kva-icon', document.getElementById('kva-equip').value);
+document.getElementById('kw-equip').addEventListener('change', e=>{
+  document.getElementById('kw-eff-field').style.display = e.target.value==='motor' ? 'block':'none';
+  setIcon('kw-icon', e.target.value);
+});
+setIcon('kw-icon', document.getElementById('kw-equip').value);
+
+function calcKVA(){
+  const equip = document.getElementById('kva-equip').value;
+  const s3 = document.getElementById('kva-phase').value==='3';
+  const R = parseFloat(document.getElementById('kva-rating').value);
+  if(!R){ show('kva-out','<div class="note">রেটেড kVA লিখুন।</div>'); return; }
+  const cur = V => s3 ? (R*1000)/(Math.sqrt(3)*V) : (R*1000)/V;
+  const fml = V => s3 ? `I = (kVA x 1000) / (√3 x V)\n  = (${R} x 1000) / (1.732 x ${V})` : `I = (kVA x 1000) / V\n  = (${R} x 1000) / ${V}`;
+  let html='';
+  if(equip==='transformer'){
+    const kV = parseFloat(document.getElementById('kva-ht').value);
+    const LV = parseFloat(document.getElementById('kva-lt').value);
+    if(!kV||!LV){ show('kva-out','<div class="note">HT ও LT দুই ভোল্টেজই লিখুন।</div>'); return; }
+    const HV = kV*1000;
+    html = sideBlock(`HT সাইড (${kV} kV)`, cur(HV), fml(HV), true, 'cu', 1)
+         + '<div class="divider"></div>'
+         + sideBlock(`LT সাইড (${LV} V)`, cur(LV), fml(LV), false, 'cu', 1);
+  } else {
+    const V = parseFloat(document.getElementById('kva-voltage').value);
+    if(!V){ show('kva-out','<div class="note">ভোল্টেজ লিখুন।</div>'); return; }
+    const names={generator:'জেনারেটর',ups:'ইউপিএস'};
+    html = sideBlock(`${names[equip]} (${V} V)`, cur(V), fml(V), V>=1000, 'cu', 1);
+  }
+  show('kva-out', html);
+}
+
+function calcKW(){
+  const equip = document.getElementById('kw-equip').value;
+  const s3 = document.getElementById('kw-phase').value==='3';
+  const R = parseFloat(document.getElementById('kw-rating').value);
+  const V = parseFloat(document.getElementById('kw-voltage').value);
+  const pf = parseFloat(document.getElementById('kw-pf').value);
+  if(!R||!V||!pf){ show('kw-out','<div class="note">রেটিং, ভোল্টেজ ও PF লিখুন।</div>'); return; }
+  let eff=1, effTxt='', effName='';
+  if(equip==='motor'){
+    eff = parseFloat(document.getElementById('kw-eff').value)/100;
+    if(!eff){ show('kw-out','<div class="note">মোটরের জন্য Efficiency লিখুন।</div>'); return; }
+    effTxt = ` x ${eff}`; effName=' x Eff';
+  }
+  let I, formula;
+  if(s3){
+    I = (R*1000)/(Math.sqrt(3)*V*pf*eff);
+    formula = `I = (kW x 1000) / (√3 x V x PF${effName})\n  = (${R} x 1000) / (1.732 x ${V} x ${pf}${effTxt})`;
+  } else {
+    I = (R*1000)/(V*pf*eff);
+    formula = `I = (kW x 1000) / (V x PF${effName})\n  = (${R} x 1000) / (${V} x ${pf}${effTxt})`;
+  }
+  const names={motor:'মোটর',generator:'জেনারেটর',ups:'ইউপিএস',transformer:'ট্রান্সফরমার'};
+  let html = sideBlock(`${names[equip]} (${V} V)`, I, formula, V>=1000, 'cu', 1);
+  if(equip==='motor') html += '<div class="note">মোটরের ক্ষেত্রে স্টার্টিং কারেন্ট (DOL হলে প্রায় 6-7 গুণ) আলাদাভাবে ধরে ব্রেকার/ওভারলোড সেটিং ঠিক করুন।</div>';
+  show('kw-out', html);
+}
+
+function calcPF(){
+  const kw = parseFloat(document.getElementById('pf-kw').value);
+  const pf1 = parseFloat(document.getElementById('pf-existing').value);
+  const pf2 = parseFloat(document.getElementById('pf-target').value);
+  if(!kw||!pf1||!pf2){ show('pf-out','<div class="note">সব ঘর পূরণ করুন।</div>'); return; }
+  const tan1 = Math.tan(Math.acos(pf1));
+  const tan2 = Math.tan(Math.acos(pf2));
+  const kvar = kw*(tan1-tan2);
+  show('pf-out', `<span class="val">${kvar.toFixed(1)}</span><span class="unit">kVAR (প্রয়োজনীয় ক্যাপাসিটর ব্যাংক)</span>
+  <div class="formula">kVAR = kW x (tanφ1 - tanφ2)\n  tanφ1 = ${tan1.toFixed(3)}, tanφ2 = ${tan2.toFixed(3)}\n  = ${kw} x (${tan1.toFixed(3)} - ${tan2.toFixed(3)})\n  = ${kvar.toFixed(1)} kVAR</div>
+  <div class="sub">বাজারে পাওয়া স্ট্যান্ডার্ড ক্যাপাসিটর ব্যাংক স্টেপের নিকটতম বড় মান নিন।</div>`);
+}
+
+function calcVD(){
+  const phase = document.getElementById('vd-phase').value;
+  const V = parseFloat(document.getElementById('vd-voltage').value);
+  const I = parseFloat(document.getElementById('vd-current').value);
+  const L = parseFloat(document.getElementById('vd-length').value);
+  const S = parseFloat(document.getElementById('vd-size').value);
+  const pf = parseFloat(document.getElementById('vd-pf').value) || 0.9;
+  if(!V||!I||!L||!S){ show('vd-out','<div class="note">সব ঘর পূরণ করুন।</div>'); return; }
+  const rho = 0.0225;
+  let drop, dropPct, formula;
+  if(phase==='3'){
+    drop = (Math.sqrt(3)*I*L*rho*pf)/S;
+    dropPct = (drop/V)*100;
+    formula = `Vd = (√3 x I x L x ρ x PF) / S\n  = (1.732 x ${I} x ${L} x ${rho} x ${pf}) / ${S}`;
+  } else {
+    drop = (2*I*L*rho*pf)/S;
+    dropPct = (drop/V)*100;
+    formula = `Vd = (2 x I x L x ρ x PF) / S\n  = (2 x ${I} x ${L} x ${rho} x ${pf}) / ${S}`;
+  }
+  const status = dropPct<=3 ? 'সাধারণ 3% লিমিটের মধ্যে আছে' : (dropPct<=5 ? '3% এর বেশি, সাইট স্ট্যান্ডার্ড চেক করুন' : '5% এর বেশি, কেবল সাইজ ছোট হয়ে গেছে সম্ভবত');
+  show('vd-out', `<span class="val">${dropPct.toFixed(2)}</span><span class="unit">% ভোল্টেজ ড্রপ (${drop.toFixed(2)} V)</span>
+  <div class="formula">${formula}\n  = ${drop.toFixed(2)} V ড্রপ\n  %Vd = ${dropPct.toFixed(2)}%</div>
+  <div class="sub">${status}</div>
+  <div class="note">শুধু রেজিস্ট্যান্স ধরে আনুমানিক হিসাব (ρ=0.0225 Ω·mm²/মি, কপার, ~70°C)। লম্বা রান বা বড় কেবলের জন্য পূর্ণ ইমপিড্যান্স টেবিল দেখুন।</div>`);
+}
+
+function calcPUE(){
+  const total = parseFloat(document.getElementById('pue-total').value);
+  const it = parseFloat(document.getElementById('pue-it').value);
+  if(!total||!it){ show('pue-out','<div class="note">দুটো মানই লিখুন।</div>'); return; }
+  const pue = total/it;
+  const dcie = (it/total)*100;
+  let rating = '';
+  if(pue<=1.2) rating='চমৎকার (হাইপারস্কেল লেভেল)';
+  else if(pue<=1.5) rating='ভালো';
+  else if(pue<=2.0) rating='গড় মানের';
+  else rating='খারাপ — কুলিং/লস থেকে বেশি ওভারহেড';
+  show('pue-out', `<span class="val">${pue.toFixed(2)}</span><span class="unit">PUE</span>
+  <div class="formula">PUE = মোট ফ্যাসিলিটি পাওয়ার / IT পাওয়ার = ${total} / ${it} = ${pue.toFixed(2)}\nDCiE = 1/PUE x 100 = ${dcie.toFixed(1)}%</div>
+  <div class="sub">${rating}</div>`);
+}
+
+function calcBattery(){
+  const V = parseFloat(document.getElementById('bat-v').value);
+  const Ah = parseFloat(document.getElementById('bat-ah').value);
+  const load = parseFloat(document.getElementById('bat-load').value);
+  const eff = parseFloat(document.getElementById('bat-eff').value)/100 || 0.9;
+  if(!V||!Ah||!load){ show('bat-out','<div class="note">সব ঘর পূরণ করুন।</div>'); return; }
+  const wh = V*Ah*eff;
+  const hours = wh/(load*1000);
+  show('bat-out', `<span class="val">${hours.toFixed(2)}</span><span class="unit">ঘণ্টা ব্যাকআপ (আনুমানিক)</span>
+  <div class="formula">Energy = V x Ah x Eff = ${V} x ${Ah} x ${eff} = ${wh.toFixed(0)} Wh\nTime = Energy / Load(W) = ${wh.toFixed(0)} / ${(load*1000)} = ${hours.toFixed(2)} h</div>
+  <div class="note">বেশি ডিসচার্জ রেটে আসল ব্যাকআপ টাইম কম হয় (Peukert effect), বিশেষত লেড-এসিড ব্যাটারিতে। এটা উপরের সীমা হিসেবে ধরুন।</div>`);
+}
+
+const cuTable = [[1.5,17],[2.5,24],[4,32],[6,41],[10,57],[16,76],[25,96],[35,119],[50,144],[70,184],[95,223],[120,259],[150,299],[185,341],[240,403],[300,464]];
+const htTable = [[35,150],[50,180],[70,225],[95,270],[120,310],[150,350],[185,395],[240,460],[300,520],[400,590]];
+const ltBreakers = [6,10,16,20,25,32,40,50,63,80,100,125,160,200,225,250,315,400,500,630,800,1000,1250,1600,2000,2500,3200,4000,5000,6300];
+const htBreakers = [200,400,630,800,1250,1600,2000,2500,3150,4000];
+
+function pickCable(I, ht, mat, derate){
+  let table = ht ? htTable : cuTable;
+  if(mat==='al') table = table.map(r=>[r[0], Math.round(r[1]*0.78)]);
+  const req = I/derate;
+  for(let n=1;n<=8;n++){
+    const p = table.find(r=>r[1]>=req/n);
+    if(p) return {n:n, size:p[0], amp:p[1]};
+  }
+  return null;
+}
+function pickBreaker(I, ht){
+  return (ht ? htBreakers : ltBreakers).find(b=>b>=I) || null;
+}
+function breakerKind(amp, ht){
+  if(ht) return {name:'VCB (ভ্যাকুয়াম সার্কিট ব্রেকার)', type:'vcb'};
+  if(amp<=100) return {name:'MCB (মিনিয়েচার সার্কিট ব্রেকার)', type:'mcb'};
+  return {name:'MCCB (মোল্ডেড কেস সার্কিট ব্রেকার)', type:'mccb'};
+}
+function sizingHTML(I, ht, mat, derate){
+  const c = pickCable(I, ht, mat, derate);
+  const b = pickBreaker(I, ht);
+  const kind = breakerKind(b || I, ht);
+  const bTxt = b ? `${b} A` : 'বাসবার ব্যবহার করুন';
+  const cType = ht ? 'HT কেবল (XLPE কপার)' : (mat==='cu' ? 'কপার কেবল' : 'অ্যালুমিনিয়াম কেবল');
+  const cTxt = c ? `${c.n>1 ? c.n+' x ' : ''}${c.size} mm²` : 'বাসডাক্ট/বাসবার ব্যবহার করুন';
+  let html = `<div class="line"><span class="lbl breakericon">${icon(kind.type)} ব্রেকার</span><span class="val2">${kind.name}<br>${bTxt}</span></div>`;
+  html += `<div class="line"><span class="lbl">${cType}</span><span class="val2">${cTxt}</span></div>`;
+  if(c) html += `<div class="hint">প্রতিটি কেবলের আনুমানিক ক্ষমতা ${c.amp} A${c.n>1 ? ' — প্রতি ফেজে '+c.n+'টি কেবল প্যারালাল' : ''}</div>`;
+  if(c && b && b > c.n*c.amp*derate) html += '<div class="note">ব্রেকার কেবলের ক্ষমতার চেয়ে বড় হয়ে যাচ্ছে — এক ধাপ বড় কেবল নিন।</div>';
+  html += `<div class="hint">সাধারণ নিয়ম: 100A পর্যন্ত MCB, এর বেশি হলে MCCB ব্যবহার করা হয়। সেফটির জন্য ব্রেকার কখনোই কেবলের ক্ষমতার বেশি রেটিং এর দেওয়া উচিত না।</div>`;
+  return html;
+}
+function sideBlock(title, I, formula, ht, mat, derate){
+  return `<div class="sidetitle">${title}</div><div><span class="val">${I.toFixed(1)}</span><span class="unit">A ফুল লোড কারেন্ট</span></div>${sizingHTML(I, ht, mat, derate)}<div class="formula">${formula}\n  = ${I.toFixed(1)} A</div>`;
+}
+
+function calcCable(){
+  const mode = document.querySelector('#cbl-mode-toggle div.active').dataset.mode;
+  const phase = document.getElementById('cbl-phase').value;
+  const mat = document.getElementById('cbl-material').value;
+  const derate = parseFloat(document.getElementById('cbl-derate').value) || 1;
+  let I, srcTxt='';
+  if(mode==='kw'){
+    const kw = parseFloat(document.getElementById('cbl-kw').value);
+    const V = parseFloat(document.getElementById('cbl-voltage').value);
+    const pf = parseFloat(document.getElementById('cbl-pf').value) || 0.9;
+    if(!kw||!V){ show('cbl-out','<div class="note">kW ও ভোল্টেজ লিখুন।</div>'); return; }
+    I = phase==='3' ? (kw*1000)/(Math.sqrt(3)*V*pf) : (kw*1000)/(V*pf);
+    srcTxt = phase==='3' ? `I = (kW x 1000)/(√3 x V x PF) = (${kw} x 1000)/(1.732 x ${V} x ${pf}) = ${I.toFixed(1)} A\n` : `I = (kW x 1000)/(V x PF) = (${kw} x 1000)/(${V} x ${pf}) = ${I.toFixed(1)} A\n`;
+  } else {
+    I = parseFloat(document.getElementById('cbl-current').value);
+    if(!I){ show('cbl-out','<div class="note">লোড কারেন্ট লিখুন।</div>'); return; }
+    const V = parseFloat(document.getElementById('cbl-voltage').value);
+    const pf = parseFloat(document.getElementById('cbl-pf').value) || 0.9;
+    if(V){
+      const kwEq = phase==='3' ? (Math.sqrt(3)*V*I*pf)/1000 : (V*I*pf)/1000;
+      srcTxt = phase==='3' ? `সমতুল্য লোড = (√3 x V x I x PF)/1000 = (1.732 x ${V} x ${I} x ${pf})/1000 = ${kwEq.toFixed(2)} kW\n` : `সমতুল্য লোড = (V x I x PF)/1000 = (${V} x ${I} x ${pf})/1000 = ${kwEq.toFixed(2)} kW\n`;
+      show('cbl-out', `<div><span class="val">${I.toFixed(1)} A</span><span class="unit"> = </span><span class="val2">${kwEq.toFixed(2)} kW</span></div>${sizingHTML(I, false, mat, derate)}<div class="formula">${srcTxt}ডিরেটিং ধরে প্রয়োজনীয় ক্যাপাসিটি = ${I.toFixed(1)} / ${derate} = ${(I/derate).toFixed(1)} A</div>`);
+      return;
+    }
+  }
+  show('cbl-out', `<div><span class="val">${I.toFixed(1)}</span><span class="unit">A লোড কারেন্ট</span></div>${sizingHTML(I, false, mat, derate)}<div class="formula">${srcTxt}ডিরেটিং ধরে প্রয়োজনীয় ক্যাপাসিটি = ${I.toFixed(1)} / ${derate} = ${(I/derate).toFixed(1)} A</div>`);
+}
+
+function calcMotorCap(){
+  const kw = parseFloat(document.getElementById('mc-kw').value);
+  const pf1 = parseFloat(document.getElementById('mc-pf1').value);
+  const pf2 = parseFloat(document.getElementById('mc-pf2').value);
+  if(!kw||!pf1||!pf2){ show('mc-out','<div class="note">সব ঘর পূরণ করুন।</div>'); return; }
+  const tan1 = Math.tan(Math.acos(pf1));
+  const tan2 = Math.tan(Math.acos(pf2));
+  const kvar = kw*(tan1-tan2);
+  show('mc-out', `<span class="val">${kvar.toFixed(1)}</span><span class="unit">kVAR</span>
+  <div class="formula">kVAR = kW x (tanφ1 - tanφ2) = ${kw} x (${tan1.toFixed(3)} - ${tan2.toFixed(3)}) = ${kvar.toFixed(1)} kVAR</div>
+  <div class="note">রুল অফ থাম্ব: মোটরের টার্মিনালে সরাসরি ক্যাপাসিটর লাগালে, kVAR মোটরের নো-লোড ম্যাগনেটাইজিং kVAR এর প্রায় 90% এর মধ্যে রাখুন — বেশি হলে মোটর বন্ধের পর সেলফ-এক্সাইটেশন/ওভারভোল্টেজ হতে পারে।</div>`);
+}
+
+function fmtHM(hours){
+  const tm = Math.round(hours*60);
+  const hh = Math.floor(tm/60), mm = tm%60;
+  return (hh ? hh+' ঘণ্টা ' : '') + ((mm || !hh) ? mm+' মিনিট' : '');
+}
+
+function calcDG(){
+  const h = parseFloat(document.getElementById('dg-h').value) || 0;
+  const m = parseFloat(document.getElementById('dg-m').value) || 0;
+  const fuel = parseFloat(document.getElementById('dg-fuel').value);
+  const tank = parseFloat(document.getElementById('dg-tank').value);
+  const totalH = h + m/60;
+  if(!totalH||!fuel){ show('dg-out','<div class="note">রানিং টাইম (ঘণ্টা বা মিনিট) ও খরচ হওয়া ফুয়েল লিখুন।</div>'); return; }
+  const rate = fuel/totalH;
+  let html = `<span class="val">${rate.toFixed(2)}</span><span class="unit">লিটার/ঘণ্টা</span>
+  <div class="formula">মোট সময় = ${h} ঘণ্টা + ${m} মিনিট = ${totalH.toFixed(2)} ঘণ্টা\nরেট = ফুয়েল / সময় = ${fuel} / ${totalH.toFixed(2)} = ${rate.toFixed(2)} লিটার/ঘণ্টা\n(প্রতি মিনিটে ${(rate/60).toFixed(3)} লিটার)</div>`;
+  if(tank){
+    html += `<div class="sub">ট্যাংকে থাকা ${tank} লিটার দিয়ে এই রেটে আনুমানিক <b>${fmtHM(tank/rate)}</b> চলবে</div>`;
+  }
+  html += `<div class="note">রেট নির্দিষ্ট লোড লেভেলের জন্য প্রযোজ্য — লোড বদলালে রেটও বদলাবে।</div>`;
+  show('dg-out', html);
+}
+
+function tick(){
+  const d = new Date();
+  const date = d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  const time = d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('clock').innerHTML = `<b>${time}</b>${date}`;
+}
+tick(); setInterval(tick,15000);
+</script>
+</body>
+</html>
